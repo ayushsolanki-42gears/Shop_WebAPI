@@ -1,20 +1,19 @@
-using MongoDB.Driver;
+using MyWebApiApp.Data;
 using MyWebApiApp.Services.Interfaces;
 
 namespace MyWebApiApp.Services.Implementations
 {
     public class LogService : ILogServices
     {
-        private readonly IMongoCollection<LogModel> _logs;
-        public LogService()
+        private readonly LogRepository _logRepository;
+
+        public LogService(LogRepository logRepository)
         {
-            // 👇 change connection string if needed
-            var client = new MongoClient("mongodb://localhost:27017");
-            var database = client.GetDatabase("ShopLogs");
-            _logs = database.GetCollection<LogModel>("Logs");
+            _logRepository = logRepository;
         }
 
-        public void InsertLog(string eventType, string? description, string? userId)
+        #region insert log
+        public void InsertLog(string eventType, string description, string userId)
         {
             var log = new LogModel
             {
@@ -23,7 +22,43 @@ namespace MyWebApiApp.Services.Implementations
                 UserID = userId
             };
 
-            _logs.InsertOne(log);
+            _logRepository.InsertLog(log);
         }
+        #endregion
+
+        #region get all logs
+        public IEnumerable<LogModel> GetAllLogs()
+        {
+            return _logRepository.GetAllLogs();
+        }
+        #endregion
+
+        #region get logs by event
+        public IEnumerable<LogModel> GetLogsByEvent(string eventType)
+        {
+            return _logRepository.GetLogsByEvent(eventType);
+        }
+        #endregion
+
+        #region get logs by user
+        public IEnumerable<LogModel> GetLogsByUser(int userId)
+        {
+            return _logRepository.GetLogsByUser(userId.ToString());
+        }
+        #endregion
+
+        #region get log by id
+        public LogModel? GetLogById(string id)
+        {
+            return _logRepository.GetLogById(id);
+        }
+        #endregion
+
+        #region get all event types
+        public List<string> GetEventTypes()
+        {
+            return _logRepository.GetAllEventTypes();
+        }
+        #endregion
     }
 }

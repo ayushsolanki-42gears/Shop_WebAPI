@@ -5,10 +5,11 @@ using System;
 public class LogModel
 {
     [BsonId]
-    public ObjectId Id { get; set; }
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string Id { get; set; } = string.Empty;
 
-    public string EventType { get; set; }   // e.g. Login, Logout, ProductUpdated
-    public string? UserID { get; set; }
-    public string? Description { get; set; }
+    public string EventType { get; set; } = string.Empty;
+    public string UserID { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

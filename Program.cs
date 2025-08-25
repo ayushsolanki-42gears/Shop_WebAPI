@@ -113,6 +113,8 @@ builder.Services.AddScoped<CartRepository>();
 builder.Services.AddScoped<CartItemRepository>();
 builder.Services.AddScoped<InvoiceRepository>();
 builder.Services.AddScoped<InvoiceItemRepository>();
+builder.Services.AddScoped<LogRepository>();
+
 
 builder.Services.Scan(scan => scan
     .FromAssemblies(Assembly.GetExecutingAssembly())
