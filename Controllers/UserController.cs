@@ -9,14 +9,14 @@ namespace MyWebApiApp.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IUserService? _userService;
+        private readonly IUserService _userService;
         public UserController(IUserService userService)
         {
             _userService = userService;
         }
 
-        #region Get All User
         [HttpGet()]
+        #region Get All User
         public IActionResult GetAllUsers()
         {
             ApiResponse response;
@@ -33,26 +33,33 @@ namespace MyWebApiApp.Controllers
 
         [LogAction("Login")]
         [HttpPost("LoginUser")]
+        #region LoginUser
         public IActionResult LoginUser(LoginRequest? request)
         {
             ApiResponse response;
+            if (request == null || string.IsNullOrEmpty(request.UserName) || string.IsNullOrEmpty(request.Password))
+            {
+                throw new ArgumentException("Username or Password is not provided");
+            }
             var user = _userService?.Login(request.UserName, request.Password);
             if (user == null)
             {
-                response = new ApiResponse("User Not found", 404);
+                response = new ApiResponse("Invalid Credential", 404);
                 return NotFound(response);
             }
-            Console.WriteLine("User Login ...........");
             response = new ApiResponse(user, "User login successfully", 200);
             return Ok(response);
         }
+        #endregion
 
         [HttpPost("Logout")]
+        #region Logout user
         public IActionResult Logout()
         {
-            LogoutResult user = _userService.Logout();
+            _userService.Logout();
             ApiResponse response = new ApiResponse("Logged out successfully.", 200);
             return Ok(response);
         }
+        #endregion
     }
 }

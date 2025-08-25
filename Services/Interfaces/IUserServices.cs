@@ -7,6 +7,6 @@ namespace MyWebApiApp.Services.Interfaces
     {
         LoginResponse? Login(string UserName, string Password);
         IEnumerable<UserModel>? GetAllUser();
-        LogoutResult Logout();
+        void Logout();
     }
 }

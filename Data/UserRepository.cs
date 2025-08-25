@@ -23,10 +23,11 @@ namespace MyWebApiApp.Data
             {
                 users.Add(new UserModel()
                 {
-                    UserID = (int)row["UserID"],
-                    UserName = row["UserName"].ToString(),
-                    Email = row["Email"].ToString(),
-                    Password = row["Password"].ToString()
+                    UserID = row.Field<int>("UserID"),
+                    UserName = row.Field<string>("UserName") ?? "",
+                    Email = row.Field<string>("Email") ?? "",
+                    Password = row.Field<string>("Password") ?? ""
+
                 });
             }
 
@@ -39,18 +40,18 @@ namespace MyWebApiApp.Data
         {
             var dt = _dBHelper.ExecuteDataTable(
                 "PR_User_Login",
-                new SqlParameter("@UserName",userName),
-                new SqlParameter("@Password",password)
+                new SqlParameter("@UserName", userName),
+                new SqlParameter("@Password", password)
             );
 
-            if (dt.Rows.Count == 0) return null;
-            var row = dt.Rows[0];
+            var row = dt.AsEnumerable().FirstOrDefault();
+            if (row == null) return null;
             
             return new LoginResponse()
             {
-                UserID = (int)row["UserID"],
-                UserName = row["UserName"].ToString(),
-                Role = row["Role"].ToString()
+                UserID = row.Field<int>("UserID"),
+                UserName = row.Field<string>("UserName") ?? "",
+                Role = row.Field<string>("Role") ?? ""
             };
         }
         #endregion
