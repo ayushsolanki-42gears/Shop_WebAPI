@@ -73,7 +73,8 @@ namespace MyWebApiApp.Data
                     ProductName = row["ProductName"].ToString(),
                     Quantity = Convert.ToInt32(row["Quantity"]),
                     TotalAmount = Convert.ToDecimal(row["TotalAmount"]),
-                    Price = Convert.ToDecimal(row["Price"])
+                    Price = Convert.ToDecimal(row["Price"]),
+                    Stock = Convert.ToInt32(row["Stock"])
                 });
             }
             return items;

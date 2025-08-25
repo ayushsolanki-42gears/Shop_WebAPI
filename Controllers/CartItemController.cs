@@ -17,7 +17,7 @@ namespace MyWebApiApp.Controllers
         }
 
         #region List Cart Items
-        [HttpGet()]
+        [HttpGet]
         public IActionResult GetCartItems()
         {
             ApiResponse response;

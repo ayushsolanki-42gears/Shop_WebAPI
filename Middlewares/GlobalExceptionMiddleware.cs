@@ -26,7 +26,7 @@ namespace MyWebApiApp.Middlewares
             }
             catch (Exception ex)
             {
-                // _logger.LogError(ex, "Unhandled exception occurred.");
+                _logger.LogError(ex, "Unhandled exception occurred.");
 
                 context.Response.ContentType = "application/json";
 

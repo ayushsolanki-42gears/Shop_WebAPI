@@ -73,6 +73,7 @@ using System.Reflection;
 
 
 var builder = WebApplication.CreateBuilder(args);
+Console.WriteLine("Builder Cerated");
 
 // ✅ CORS setup - replace with your real frontend URL
 builder.Services.AddCors(options =>
@@ -87,6 +88,7 @@ builder.Services.AddCors(options =>
         });
 
 });
+Console.WriteLine("Cors added");
 
 builder.Services.AddSession(options =>
 {
@@ -95,15 +97,21 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 
     // ✅ Required for cross-origin cookies
-    options.Cookie.SameSite = SameSiteMode.None; 
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; 
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
+
+Console.WriteLine("sesssion Cerated");
+
 
 // Add services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
+
+Console.WriteLine("Add sevices");
+
 
 // ✅ Dependencies
 builder.Services.AddSingleton<DBHelper>();
@@ -115,6 +123,9 @@ builder.Services.AddScoped<InvoiceRepository>();
 builder.Services.AddScoped<InvoiceItemRepository>();
 builder.Services.AddScoped<LogRepository>();
 
+Console.WriteLine("Builder depedneci");
+
+
 
 builder.Services.Scan(scan => scan
     .FromAssemblies(Assembly.GetExecutingAssembly())
@@ -123,14 +134,22 @@ builder.Services.Scan(scan => scan
     .WithScopedLifetime()
 );
 
+Console.WriteLine("Serivecessss");
+
+
 // ✅ Session config
 builder.Services.AddDistributedMemoryCache();
 // builder.Services.AddScoped<LogActionAttribute>();
+Console.WriteLine("memory cactch");
 
 
 var app = builder.Build();
 
+Console.WriteLine("App cretaed");
+
+
 app.UseMiddleware<GlobalExceptionMiddleware>();
+Console.WriteLine("global error");
 
 // ✅ Use correct CORS policy
 
@@ -139,34 +158,39 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+Console.WriteLine("app swagger");
 
-// app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
+
+Console.WriteLine("use cors");
+
 
 // ✅ Order matters — session BEFORE auth & middleware
 app.UseSession();
+Console.WriteLine("use session");
 
 
 app.UseAuthorization();
-app.Use(async (context, next) =>
-{
-    context.Request.EnableBuffering(); // ✅ Allows multiple reads of the body
+// app.Use(async (context, next) =>
+// {
+//     context.Request.EnableBuffering(); // ✅ Allows multiple reads of the body
 
-    using (var reader = new StreamReader(
-        context.Request.Body,
-        encoding: System.Text.Encoding.UTF8,
-        detectEncodingFromByteOrderMarks: false,
-        leaveOpen: true))
-    {
-        var body = await reader.ReadToEndAsync();
-        Console.WriteLine("Request Body: " + body);
+//     using (var reader = new StreamReader(
+//         context.Request.Body,
+//         encoding: System.Text.Encoding.UTF8,
+//         detectEncodingFromByteOrderMarks: false,
+//         leaveOpen: true))
+//     {
+//         var body = await reader.ReadToEndAsync();
+//         Console.WriteLine("Request Body: " + body);
 
-        // Reset the stream position so the next middleware/controller can read it
-        context.Request.Body.Position = 0;
-    }
+//         // Reset the stream position so the next middleware/controller can read it
+//         context.Request.Body.Position = 0;
+//     }
 
-    await next();
-});
+//     await next();
+// });
 app.UseMiddleware<SessionAuthMiddleware>();
 
 app.MapControllers();

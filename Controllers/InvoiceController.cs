@@ -18,7 +18,7 @@ namespace MyWebApiApp.Controllers
 
         #region Create Invoice from Cart
         [LogAction("Invoice Insert")]
-        [HttpPost()]
+        [HttpPost]
         public IActionResult CreateInvoiceFromCart()
         {
             ApiResponse response;

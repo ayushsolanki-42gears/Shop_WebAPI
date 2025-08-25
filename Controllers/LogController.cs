@@ -32,7 +32,7 @@ namespace MyWebApiApp.Controllers
         }
         #endregion
 
-        [HttpGet("{id}")]
+        [HttpGet("getById/{id}")]
         #region Get by id
         public IActionResult GetById(string id)
         {

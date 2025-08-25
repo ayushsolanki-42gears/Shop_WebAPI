@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using MyWebApiApp.Models;
 using MyWebApiApp.Models.DTOs;
 using MyWebApiApp.Services.Interfaces;
 
@@ -15,21 +16,21 @@ namespace MyWebApiApp.Controllers
             _cartService = cartService;
         }
 
-        #region Get All Carts
         [HttpGet]
+        #region Get All Carts
         public IActionResult GetAllCarts()
         {
             ApiResponse response;
-            string Role = HttpContext.Session.GetString("Role");
+            string? Role = HttpContext.Session.GetString("Role");
             int? UserID = null;
             if (!string.IsNullOrEmpty(Role) && Role.Equals("User"))
             {
-                UserID = HttpContext.Session.GetInt32("UserID");
+                UserID = HttpContext.Session.GetInt32("UserID")!.Value;
             }
-            var carts = _cartService.GetAllCart(UserID);
-            if (carts == null || !carts.Any())
+            var carts = _cartService.GetAllCart(UserID) ?? Enumerable.Empty<CartModel>();
+            if (!carts.Any())
             {
-                response = new ApiResponse("Carts not found", 404);
+                response = new ApiResponse(carts,"Carts not found", 404);
                 return NotFound(response);
             }
             response = new ApiResponse(carts, "Carts Fetch Successfully", 200);
@@ -53,15 +54,14 @@ namespace MyWebApiApp.Controllers
         // }
         // #endregion  
 
-        #region Delete Cart
         [HttpPatch("Delete/{cartId}")]
+        #region Delete Cart
         public IActionResult DeleteCart(int cartId)
         {
             ApiResponse response;
             if (cartId <= 0)
             {
-                response = new ApiResponse("Invalid CartID", 400);
-                return BadRequest(response);
+                throw new ArgumentException("CartID is invalid");
             }
 
             bool isDeleted = _cartService.DeleteCart(cartId);
@@ -81,8 +81,7 @@ namespace MyWebApiApp.Controllers
             ApiResponse response;
             if (cartId <= 0)
             {
-                response = new ApiResponse("Invalid CartID", 400);
-                return BadRequest(response);
+                throw new ArgumentException("CartID is invalid");
             }
             bool isUpdated = _cartService.UpdateTotal(cartId);
             if (!isUpdated)
