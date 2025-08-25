@@ -1,5 +1,6 @@
 using MyWebApiApp.Data;
 using MyWebApiApp.Models;
+using MyWebApiApp.Models.DTOs;
 using MyWebApiApp.Services.Interfaces;
 
 namespace MyWebApiApp.Services.Implementations
@@ -19,13 +20,13 @@ namespace MyWebApiApp.Services.Implementations
             return products;
         }
 
-        public bool AddProduct(ProductModel product)
+        public bool AddProduct(CreateProductDto product)
         {
             bool isInserted = _productRepository.AddProduct(product);
             return isInserted;
         }
 
-        public bool EditProduct(ProductModel product)
+        public bool EditProduct(UpdateProductDto product)
         {
             bool isUpdated = _productRepository.UpdateProduct(product);
             return isUpdated;

@@ -17,8 +17,8 @@ namespace MyWebApiApp.Controllers
             _productService = productServices;
         }
 
-        #region Get All Products
         [HttpGet]
+        #region Get All Products
         public IActionResult GetAllProducts()
         {
             var products = _productService.GetAllProducts();
@@ -33,46 +33,49 @@ namespace MyWebApiApp.Controllers
         }
         #endregion
 
-        #region Add Product
         [LogAction("Product Insert")]
         [HttpPost]
-        public IActionResult AddProduct([FromBody] ProductModel product)
+        #region Add Product
+
+        public IActionResult AddProduct([FromBody] CreateProductDto product)
         {
             ApiResponse response;
 
-            if (product == null)
+            if (!ModelState.IsValid)
             {
-                response = new ApiResponse("Product is null", 400);
-                return BadRequest(response);
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                return BadRequest(new ApiResponse(errors, "All Product Details is required", 400));
             }
 
             bool isInserted = _productService.AddProduct(product);
-
             if (!isInserted)
             {
                 throw new Exception("Error while inserting Product");
             }
 
-            response = new ApiResponse("Inserted Successfully",200);
+            response = new ApiResponse("Inserted Successfully", 200);
             return Ok(response);
         }
         #endregion
 
-        #region Update Product
         [LogAction("Product Update")]
         [HttpPut("{ProductID}")]
-        public IActionResult UpdateProduct(int productId, ProductModel product)
+        #region Update Product
+        public IActionResult UpdateProduct(int productId, UpdateProductDto product)
         {
             ApiResponse response;
 
-            if (productId <= 0)
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                return BadRequest(new ApiResponse(errors, "All product detail is required", 400));
+            }
+
+            if (productId <= 0 || productId != product.ProductID)
             {
                 response = new ApiResponse("ProductID is required", 400);
                 return BadRequest(response);
             }
-
-            // add productid to product model
-            product.ProductID = productId;
 
             bool isUpdated = _productService.EditProduct(product);
 
@@ -86,17 +89,16 @@ namespace MyWebApiApp.Controllers
         }
         #endregion
 
-        #region Delete Product
         [LogAction("Product Delete")]
         [HttpPatch("Delete/{ProductID}")]
+        #region Delete Product
         public IActionResult DeleteProduct(int productId)
         {
             ApiResponse response;
 
             if (productId <= 0)
             {
-                response = new ApiResponse("ProductID is required", 400);
-                return BadRequest(response);
+                throw new ArgumentException("ProductID is required or not valid");
             }
 
             bool isUpdated = _productService.DeleteProduct(productId);
