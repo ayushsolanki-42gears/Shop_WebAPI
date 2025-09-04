@@ -1,0 +1,6 @@
+# Ignore appsettings
+appsettings.json
+appsettings.*.json
+bin/
+obj/
+appsettings*.json
